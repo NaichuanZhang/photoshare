@@ -93,11 +93,14 @@ def addfriend():
 		uid = getUserIdFromEmail(flask_login.current_user.id)
 		print uid
 		email = request.form.get('friend_email')
-		friendid = getUserIdFromEmail(email)
-		cursor = conn.cursor()
-		cursor.execute("INSERT INTO Friends (friend_id_1, friend_id_2) VALUES ('{0}', '{1}')".format(uid, friendid))
-		conn.commit()
-		return render_template('hello.html', message="You added a new friend")
+		if isEmailExist(email):
+			friendid = getUserIdFromEmail(email)
+			cursor = conn.cursor()
+			cursor.execute("INSERT INTO Friends (friend_id_1, friend_id_2) VALUES ('{0}', '{1}')".format(uid, friendid))
+			conn.commit()
+			return render_template('hello.html', message="You added a new friend")
+		else:
+			return render_template('hello.html', message="Your friend is not found in the database")
 	else:
 		print "hello"
 		return render_template('add_friend.html')
@@ -222,6 +225,15 @@ def isEmailUnique(email):
 	else:
 		return True
 #end login code
+def isEmailExist(email):
+	#use this to check if a email has already been registered
+	cursor = conn.cursor()
+	if cursor.execute("SELECT email  FROM Users WHERE email = '{0}'".format(email)):
+		#this means there are greater than zero entries with that email
+		return True
+	else:
+		return False
+#to check if user exist to add friends.
 
 @app.route('/profile')
 @flask_login.login_required
