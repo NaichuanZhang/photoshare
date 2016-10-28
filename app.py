@@ -187,22 +187,20 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 def allowed_file(filename):
 	return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
-def getPictureid():
-	return 1
 
-@app.route('/comment_new', methods=['GET','POST'])
+@app.route('/comment_new/<picture_id>', methods=['GET','POST'])
 @flask_login.login_required
-def comment_new():
+def comment_new(picture_id):
+	print picture_id # log the picture_id
     	if request.method == 'POST':
 			uid = getUserIdFromEmail(flask_login.current_user.id)
 			comment = request.form.get('description')
-			pid = getPictureid()
-			print description  #will show in the shell
+			print comment  #will show in the shell
 			cursor = conn.cursor()
-			cursor.execute("INSERT INTO Comments (description, photo_id) VALUES ('{0}', '{1}')".format(album_name,pid))
+			cursor.execute("INSERT INTO Comments (description, photo_id) VALUES ('{0}', '{1}')".format(comment,picture_id))
 			conn.commit()
 			return render_template('hello.html', name=flask_login.current_user.id, message='Comment created!', photos=getUsersPhotos(uid))
-	return render_template('comment_new.html')
+	return render_template('comment_new.html',pid = picture_id)
 
 
 

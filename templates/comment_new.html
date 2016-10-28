@@ -6,7 +6,7 @@
     <div class="title">
         <h1>Upload a comment to Photoshare</h1>
     </div>
-    <form method="post" enctype="multipart/form-data" action="/comment_new">
+    <form method="post" enctype="multipart/form-data" action="/comment_new/{{pid}}">
         <label for="description">Write your comment</label>
         <input type="text" name="description" required='true' /><br />
         <input type="submit" value="Create" />
