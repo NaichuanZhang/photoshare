@@ -81,3 +81,5 @@ INSERT INTO albums(album_id,album_name,owner_id,date_of_create) Values (1,"album
 alter table albums drop date_of_create;
 alter table albums add date_of_create datetime default CURRENT_TIMESTAMP;
 alter table pictures add date_of_create datetime default CURRENT_TIMESTAMP;
+alter table comments drop date_of_create;
+alter table comments add date_of_create datetime default CURRENT_TIMESTAMP;

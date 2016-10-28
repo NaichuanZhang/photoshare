@@ -1,0 +1,14 @@
+<head>
+    <title>Create a Comment!</title>
+</head>
+
+<body>
+    <div class="title">
+        <h1>Upload a comment to Photoshare</h1>
+    </div>
+    <form method="post" enctype="multipart/form-data" action="/comment_new">
+        <label for="description">Write your comment</label>
+        <input type="text" name="description" required='true' /><br />
+        <input type="submit" value="Create" />
+    </form>
+</body>

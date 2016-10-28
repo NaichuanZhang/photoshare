@@ -8,6 +8,7 @@
 <ul>
     {% for photo in photos %}
     <li><img src='data:image/png;base64, {{photo[0]}}' /></li>
+    <li><a href="/comment_new">Write Comment</a></li>
     {% endfor %}
 </ul>
 {% endif %} {% if message is none %}

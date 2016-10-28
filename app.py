@@ -1,14 +1,3 @@
-######################################
-# author ben lawson <balawson@bu.edu>
-# Edited by: Craig Einstein <einstein@bu.edu>
-######################################
-# Some code adapted from
-# CodeHandBook at http://codehandbook.org/python-web-application-development-using-flask-and-mysql/
-# and MaxCountryMan at https://github.com/maxcountryman/flask-login/
-# and Flask Offical Tutorial at  http://flask.pocoo.org/docs/0.10/patterns/fileuploads/
-# see links for further understanding
-###################################################
-
 import flask
 from flask import Flask, Response, request, render_template, redirect, url_for
 from flaskext.mysql import MySQL
@@ -93,7 +82,7 @@ def new_page_function():
 def show():
     if request.method == 'GET':
 		uid = getUserIdFromEmail(flask_login.current_user.id)
-		return render_template('hello.html', name=flask_login.current_user.id, message='Here are your photos', photos=getUsersPhotos(uid) )
+		return render_template('hello.html', name=flask_login.current_user.id, message='Here are your photos', photos=getUsersPhotos(uid))
 	#The method is GET so we return a  HTML form to upload the a photo.
     #TODO: show page in the hello template
 
@@ -191,6 +180,25 @@ def protected():
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 def allowed_file(filename):
 	return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+def getPictureid():
+	return 1
+
+@app.route('/comment_new', methods=['GET','POST'])
+@flask_login.login_required
+def comment_new():
+    	if request.method == 'POST':
+			uid = getUserIdFromEmail(flask_login.current_user.id)
+			comment = request.form.get('description')
+			pid = getPictureid()
+			print description  #will show in the shell
+			cursor = conn.cursor()
+			cursor.execute("INSERT INTO Comments (description, photo_id) VALUES ('{0}', '{1}')".format(album_name,pid))
+			conn.commit()
+			return render_template('hello.html', name=flask_login.current_user.id, message='Comment created!', photos=getUsersPhotos(uid))
+	return render_template('comment_new.html')
+
+
 
 @app.route('/albums_create', methods=['GET','POST'])
 @flask_login.login_required
