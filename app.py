@@ -180,6 +180,23 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 def allowed_file(filename):
 	return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
+@app.route('/albums_create', methods=['GET','POST'])
+@flask_login.login_required
+def album_create():
+    	if request.method == 'POST':
+    		uid = getUserIdFromEmail(flask_login.current_user.id)
+    		album_name = request.form.get('album_name')
+    		print album_name #will show in the shell
+    		cursor = conn.cursor()
+    		cursor.execute("INSERT INTO Albums (album_name, owner_id) VALUES ('{0}', '{1}')".format(album_name,uid))
+    		conn.commit()
+    		return render_template('hello.html', name=flask_login.current_user.id, message='Album created!', photos=getUsersPhotos(uid) )
+    	#The method is GET so we return a  HTML form to upload the a photo.
+    	else:
+    		return render_template('albums_create.html')
+
+
+
 @app.route('/upload', methods=['GET', 'POST'])
 @flask_login.login_required
 def upload_file():
