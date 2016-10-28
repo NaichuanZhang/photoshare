@@ -77,3 +77,6 @@ CREATE TABLE Pictures_Tags
 INSERT INTO Users (email, password) VALUES ('test@bu.edu', 'test');
 INSERT INTO Users (email, password) VALUES ('test1@bu.edu', 'test');
 INSERT INTO albums(album_id,album_name,owner_id,date_of_create) Values (1,"album_one",2,'1001-01-01');
+
+alter table albums drop date_of_create;
+alter table albums add date_of_create datetime default CURRENT_TIMESTAMP;
