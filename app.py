@@ -259,7 +259,7 @@ def comment_new(picture_id):
 			cursor.execute("INSERT INTO Comments (description, photo_id) VALUES ('{0}', '{1}')".format(comment,picture_id))
 			conn.commit()
 			return render_template('hello.html', name=flask_login.current_user.id, message='Comment created!', photos=getUsersPhotos(uid))
-	return render_template('comment_new.html',pid = picture_id)
+	return render_template('comment_new.html',pid = picture_id, tags= getAlltags())
 
 
 
@@ -304,8 +304,12 @@ def getAllphotos():
 	cursor = conn.cursor()
 	cursor.execute("SELECT imgdata, picture_id, caption FROM Pictures")
 	return cursor.fetchall() #NOTE list of tuples, [(imgdata, pid), ...]
-
+#function for Tags
 #TODO:add create_tag
+def getAlltags():
+	cursor = conn.cursor()
+	cursor.execute("SELECT tag_id, description FROM Tags")
+	return cursor.fetchall()
 @app.route('/tag_new', methods =['GET','POST'])
 def tag_new():
 	if request.method == 'POST':
@@ -316,7 +320,6 @@ def tag_new():
 		return render_template('hello.html', message='Tag created')
 	else:
 		return render_template('tag_new.html')
-
 #default page
 @app.route("/", methods=['GET'])
 def hello():

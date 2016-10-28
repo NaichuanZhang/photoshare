@@ -9,6 +9,13 @@
     <form method="post" enctype="multipart/form-data" action="/comment_new/{{pid}}">
         <label for="description">Write your comment</label>
         <input type="text" name="description" required='true' /><br />
-        <input type="submit" value="Create" />
+        <p>Choose a tag to add</p>
+        <select name="tags">
+          {% for tag in tags %}
+          <option value="{{tag[1]}}">{{tag[0]}},{{tag[1]}}</option>
+          {% endfor %}
+        </select>
+        <br><br>
+        <input type="submit" value='Update Picure Info'>
     </form>
 </body>
