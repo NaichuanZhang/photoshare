@@ -82,6 +82,8 @@ def new_page_function():
 def show():
     if request.method == 'GET':
 		uid = getUserIdFromEmail(flask_login.current_user.id)
+		photos=getPicturesid(uid)
+		print photos
 		return render_template('hello.html', name=flask_login.current_user.id, message='Here are your photos', photos=getUsersPhotos(uid))
 	#The method is GET so we return a  HTML form to upload the a photo.
     #TODO: show page in the hello template
@@ -153,6 +155,10 @@ def register_user():
 def getUsersPhotos(uid):
 	cursor = conn.cursor()
 	cursor.execute("SELECT imgdata, picture_id, caption FROM Pictures WHERE user_id = '{0}'".format(uid))
+	return cursor.fetchall() #NOTE list of tuples, [(imgdata, pid), ...]
+def getPicturesid(uid):
+	cursor = conn.cursor()
+	cursor.execute("SELECT picture_id FROM Pictures WHERE user_id = '{0}'".format(uid))
 	return cursor.fetchall() #NOTE list of tuples, [(imgdata, pid), ...]
 
 def getUserIdFromEmail(email):
