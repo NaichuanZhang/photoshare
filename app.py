@@ -305,6 +305,18 @@ def getAllphotos():
 	cursor.execute("SELECT imgdata, picture_id, caption FROM Pictures")
 	return cursor.fetchall() #NOTE list of tuples, [(imgdata, pid), ...]
 
+#TODO:add create_tag
+@app.route('/tag_new', methods =['GET','POST'])
+def tag_new():
+	if request.method == 'POST':
+		tag_description = request.form.get('description')
+		cursor = conn.cursor()
+		cursor.execute("INSERT INTO Tags (description) VALUES ('{0}')".format(tag_description))
+		conn.commit()
+		return render_template('hello.html', message='Tag created')
+	else:
+		return render_template('tag_new.html')
+
 #default page
 @app.route("/", methods=['GET'])
 def hello():
