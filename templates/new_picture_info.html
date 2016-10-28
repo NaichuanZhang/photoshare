@@ -6,13 +6,13 @@
     <div class="title">
         <h1>Upload a comment to Photoshare</h1>
     </div>
-    <form method="post" enctype="multipart/form-data" action="/comment_new/{{pid}}">
+    <form method="post" enctype="multipart/form-data" action="/new_picture_info/{{pid}}">
         <label for="description">Write your comment</label>
         <input type="text" name="description" required='true' /><br />
         <p>Choose a tag to add</p>
-        <select name="tags">
+        <select name="tags" id="tags_option">
           {% for tag in tags %}
-          <option value="{{tag[1]}}">{{tag[0]}},{{tag[1]}}</option>
+          <option value="{{tag[0]}}">{{tag[0]}},{{tag[1]}}</option>
           {% endfor %}
         </select>
         <br><br>

@@ -247,19 +247,22 @@ def allowed_file(filename):
 	return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
-@app.route('/comment_new/<picture_id>', methods=['GET','POST'])
+@app.route('/new_picture_info/<picture_id>', methods=['GET','POST'])
 @flask_login.login_required
-def comment_new(picture_id):
+def new_picture_info(picture_id):
 	print picture_id # log the picture_id
     	if request.method == 'POST':
 			uid = getUserIdFromEmail(flask_login.current_user.id)
 			comment = request.form.get('description')
+			tag_id = request.form['tags']
+			print(tag_id)
 			print comment  #will show in the shell
 			cursor = conn.cursor()
 			cursor.execute("INSERT INTO Comments (description, photo_id) VALUES ('{0}', '{1}')".format(comment,picture_id))
+			cursor.execute("INSERT INTO Pictures_Tags (picture_id,tag_id) VALUES('{0}','{1}')".format(picture_id, tag_id[0]))
 			conn.commit()
 			return render_template('hello.html', name=flask_login.current_user.id, message='Comment created!', photos=getUsersPhotos(uid))
-	return render_template('comment_new.html',pid = picture_id, tags= getAlltags())
+	return render_template('new_picture_info.html',pid = picture_id, tags= getAlltags())
 
 
 
@@ -310,14 +313,25 @@ def getAlltags():
 	cursor = conn.cursor()
 	cursor.execute("SELECT tag_id, description FROM Tags")
 	return cursor.fetchall()
+#check if tag already exist
+def isTagExist(new_tag):
+	cursor = conn.cursor()
+	if cursor.execute("SELECT * from tags WHERE description='{0}'".format(new_tag)):
+		return True
+	else:
+		return False
+
 @app.route('/tag_new', methods =['GET','POST'])
 def tag_new():
 	if request.method == 'POST':
 		tag_description = request.form.get('description')
-		cursor = conn.cursor()
-		cursor.execute("INSERT INTO Tags (description) VALUES ('{0}')".format(tag_description))
-		conn.commit()
-		return render_template('hello.html', message='Tag created')
+		if (isTagExist(tag_description)) == False:
+			cursor = conn.cursor()
+			cursor.execute("INSERT INTO Tags (description) VALUES ('{0}')".format(tag_description))
+			conn.commit()
+			return render_template('hello.html', message='Tag created')
+		else:
+			return render_template('hello.html', message='Tag already exist')
 	else:
 		return render_template('tag_new.html')
 #default page
