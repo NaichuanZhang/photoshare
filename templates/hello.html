@@ -10,7 +10,7 @@
     <li><img src='data:image/png;base64, {{photo[0]}}' /></li>
     <li>Photo_id:{{photo[1]}}</li>
     <li><a href="/comment_new/{{photo[1]}}">Write Comment</a></li>
-    <li>Here are the Comments</li>
+    <li><a href="/comment_show/{{photo[1]}}">Show Comments</li>
     {% endfor %}
 </ul>
 {% endif %} {% if message is none %}

@@ -46,7 +46,16 @@ def getAlbumid(album_name_input):
     cursor = conn.cursor()
     cursor.execute("SELECT album_id FROM Albums WHERE album_name ='"+ album_name_input+"'")
     return cursor.fetchone()[0]
-
+#get all the comment for one particular picture
+def getComments():
+    cursor = conn.cursor()
+    cursor.execute("SELECT photo_id, description FROM Comments")
+    return cursor.fetchall()
+#get comments for particular picture
+def getPicComments(picture_id):
+    cursor = conn.cursor()
+    cursor.execute("SELECT photo_id, description FROM Comments WHERE photo_id ='"+picture_id+"'")
+    return cursor.fetchall()
 @login_manager.user_loader
 def user_loader(email):
 	users = getUserList()
@@ -84,9 +93,22 @@ def show():
 		uid = getUserIdFromEmail(flask_login.current_user.id)
 		photos=getPicturesid(uid)
 		print photos
-		return render_template('hello.html', name=flask_login.current_user.id, message='Here are your photos', photos=getUsersPhotos(uid))
+		return render_template('hello.html', name=flask_login.current_user.id, message='Here are your photos', photos=getUsersPhotos(uid), comments= getComments())
 	#The method is GET so we return a  HTML form to upload the a photo.
     #TODO: show page in the hello template
+
+@app.route('/comment_show/<picture_id>', methods=['GET'])
+@flask_login.login_required
+def comment_show(picture_id):
+	print picture_id # log the picture_id
+    	if request.method == 'GET':
+			uid = getUserIdFromEmail(flask_login.current_user.id)
+			comment = getPicComments(picture_id)
+			print comment  #will show in the shell
+			return render_template('comment_show.html', photos=getUsersPhotos(uid), comments= comment)
+
+
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
