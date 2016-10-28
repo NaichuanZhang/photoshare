@@ -1,7 +1,7 @@
 ######################################
-# author ben lawson <balawson@bu.edu> 
+# author ben lawson <balawson@bu.edu>
 ######################################
-# Some code adapted from 
+# Some code adapted from
 # CodeHandBook at http://codehandbook.org/python-web-application-development-using-flask-and-mysql/
 # and MaxCountryMan at https://github.com/maxcountryman/flask-login/
 # and Flask Offical Tutorial at  http://flask.pocoo.org/docs/0.10/patterns/fileuploads/
@@ -19,11 +19,11 @@ import os, base64
 
 mysql = MySQL()
 app = Flask(__name__)
-app.secret_key = 'super secret string'  # Change this!
+app.secret_key = 'idonotknow'  # Change this!
 
 #These will need to be changed according to your creditionals
 app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = ''
+app.config['MYSQL_DATABASE_PASSWORD'] = '112358'
 app.config['MYSQL_DATABASE_DB'] = 'photoshare'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)
@@ -34,12 +34,12 @@ login_manager.init_app(app)
 
 conn = mysql.connect()
 cursor = conn.cursor()
-cursor.execute("SELECT email from Users") 
+cursor.execute("SELECT email from Users")
 users = cursor.fetchall()
 
 def getUserList():
     cursor = conn.cursor()
-    cursor.execute("SELECT email from Users") 
+    cursor.execute("SELECT email from Users")
     return cursor.fetchall()
 
 class User(flask_login.UserMixin):
@@ -66,7 +66,7 @@ def request_loader(request):
     cursor.execute("SELECT password FROM Users WHERE email = '{0}'".format(email))
     data = cursor.fetchall()
     pwd = str(data[0][0] )
-    user.is_authenticated = request.form['password'] == pwd 
+    user.is_authenticated = request.form['password'] == pwd
     return user
 
 '''
@@ -107,16 +107,16 @@ def login():
 @app.route('/logout')
 def logout():
     flask_login.logout_user()
-    return render_template('hello.html', message='Logged out') 
+    return render_template('hello.html', message='Logged out')
 
 @login_manager.unauthorized_handler
 def unauthorized_handler():
-    return render_template('unauth.html') 
+    return render_template('unauth.html')
 
 #you can specify specific methods (GET/POST) in function header instead of inside the functions as seen earlier
 @app.route("/register", methods=['GET'])
 def register():
-    return render_template('register.html', supress='True')  
+    return render_template('register.html', supress='True')
 
 @app.route("/register", methods=['POST'])
 def register_user():
@@ -153,7 +153,7 @@ def getUserIdFromEmail(email):
 def isEmailUnique(email):
     #use this to check if a email has already been registered
     cursor = conn.cursor()
-    if cursor.execute("SELECT email  FROM Users WHERE email = '{0}'".format(email)): 
+    if cursor.execute("SELECT email  FROM Users WHERE email = '{0}'".format(email)):
         #this means there are greater than zero entries with that email
         return False
     else:
@@ -166,7 +166,7 @@ def protected():
     return render_template('hello.html', name=flask_login.current_user.id, message="Here's your profile")
 
 #begin photo uploading code
-# photos uploaded using base64 encoding so they can be directly embeded in HTML 
+# photos uploaded using base64 encoding so they can be directly embeded in HTML
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
@@ -193,16 +193,16 @@ def upload_file():
         </form></br>
 	<a href='/'>Home</a>
         '''
-#end photo uploading code 
+#end photo uploading code
 
 
-#default page  
+#default page
 @app.route("/", methods=['GET'])
 def hello():
     return render_template('hello.html', message='Welecome to Photoshare')
 
 
 if __name__ == "__main__":
-    #this is invoked when in the shell  you run 
-    #$ python app.py 
+    #this is invoked when in the shell  you run
+    #$ python app.py
     app.run(port=5000, debug=True)

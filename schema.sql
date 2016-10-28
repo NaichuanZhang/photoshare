@@ -11,7 +11,7 @@ DROP TABLE Pictures_Tags CASCADE;
 DROP TABLE Comments CASCADE;
 */
 
-CREATE TABLE Users (
+CREATE TABLE Users(
     user_id int4  AUTO_INCREMENT,
     email varchar(255) UNIQUE,
     fname varchar(30),
@@ -28,7 +28,7 @@ CREATE TABLE Friends(
     foreign key(friend_id_1) references Users(user_id),
     foreign key(friend_id_2) references Users(user_id),
     primary key(friend_id_1, friend_id_2)
-    
+
 );
 CREATE TABLE Albums
 (
@@ -38,13 +38,15 @@ CREATE TABLE Albums
   date_of_create date NOT NULL,
   PRIMARY KEY (album_id),
   FOREIGN KEY (owner_id) REFERENCES Users(user_id) ON UPDATE CASCADE ON DELETE CASCADE
-); 
+);
 CREATE TABLE Pictures
 (
   picture_id int4  AUTO_INCREMENT NOT NULL,
+  user_id int4,
   imgdata longblob ,
   caption VARCHAR(255),
   album_id int,
+  foreign key(user_id)references Users(user_id),
   foreign key(album_id)references Albums(album_id),
   CONSTRAINT pictures_pk PRIMARY KEY (picture_id)
 );
@@ -58,7 +60,7 @@ CREATE TABLE Comments
     FOREIGN KEY(photo_id)references Pictures(picture_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 CREATE TABLE Tags
-(	
+(
 	tag_id int4 auto_increment NOT NULL,
 	description text,
     PRIMARY KEY(tag_id)
