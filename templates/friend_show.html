@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Your Friends</title>
+  </head>
+  <body>
+    <ul>
+        {% for friend in friends %}
+        <li>friend id:{{friend[0]}}</li>
+        {% endfor %}
+    </ul>
+  </body>
+</html>

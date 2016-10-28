@@ -86,6 +86,31 @@ A new page looks like this:
 def new_page_function():
 	return new_page_html
 '''
+
+@app.route('/add_friend', methods = ['GET', 'POST'])
+def addfriend():
+	if request.method == 'POST':
+		uid = getUserIdFromEmail(flask_login.current_user.id)
+		print uid
+		email = request.form.get('friend_email')
+		friendid = getUserIdFromEmail(email)
+		cursor = conn.cursor()
+		cursor.execute("INSERT INTO Friends (friend_id_1, friend_id_2) VALUES ('{0}', '{1}')".format(uid, friendid))
+		conn.commit()
+		return render_template('hello.html', message="You added a new friend")
+	else:
+		print "hello"
+		return render_template('add_friend.html')
+
+@app.route('/friend_show/<user_id>', methods = ['GET'])
+@flask_login.login_required
+def friend_show(user_id):
+	uid = getUserIdFromEmail(flask_login.current_user.id)
+	cursor = conn.cursor()
+	cursor.execute("SELECT friend_id_2 from Friends where friend_id_1='{0}'".format(uid))
+	friends = cursor.fetchall()
+	return render_template('friend_show.html', friends = friends)
+
 @app.route('/show', methods = ['GET'])
 @flask_login.login_required
 def show():
@@ -262,10 +287,16 @@ def upload_file():
 	        return render_template('hello.html', name=flask_login.current_user.id, message='Photo uploaded!', photos=getUsersPhotos(uid))
 	else:
 		return render_template('upload.html')
+
+def getAllphotos():
+	cursor = conn.cursor()
+	cursor.execute("SELECT imgdata, picture_id, caption FROM Pictures")
+	return cursor.fetchall() #NOTE list of tuples, [(imgdata, pid), ...]
+
 #default page
 @app.route("/", methods=['GET'])
 def hello():
-	return render_template('hello.html', message='Welecome to Photoshare')
+	return render_template('hello.html',message='Welecome to Photoshare', photos = getAllphotos())
 
 
 if __name__ == "__main__":
