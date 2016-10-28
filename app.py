@@ -46,6 +46,13 @@ def getUserList():
 class User(flask_login.UserMixin):
 	pass
 
+
+#This will get all the album_name from albums talbe
+def getAlbumList():
+    cursor = conn.cursor()
+    cursor.execute("SELECT album_name from Albums")
+    return cursor.fetchall()
+
 @login_manager.user_loader
 def user_loader(email):
 	users = getUserList()
