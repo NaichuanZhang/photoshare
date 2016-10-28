@@ -53,6 +53,11 @@ def getAlbumList():
     cursor.execute("SELECT album_name from Albums")
     return cursor.fetchall()
 
+def getAlbumid(album_name_input):
+    cursor = conn.cursor()
+    cursor.execute("SELECT album_id FROM Albums WHERE album_name ='"+ album_name_input+"'")
+    return cursor.fetchone()[0]
+
 @login_manager.user_loader
 def user_loader(email):
 	users = getUserList()
@@ -193,11 +198,11 @@ def album_create():
     	if request.method == 'POST':
     		uid = getUserIdFromEmail(flask_login.current_user.id)
     		album_name = request.form.get('album_name')
-    		print album_name #will show in the shell
+    		print album_name  #will show in the shell
     		cursor = conn.cursor()
     		cursor.execute("INSERT INTO Albums (album_name, owner_id) VALUES ('{0}', '{1}')".format(album_name,uid))
     		conn.commit()
-    		return render_template('hello.html', name=flask_login.current_user.id, message='Album created!', photos=getUsersPhotos(uid) )
+    		return render_template('hello.html', name=flask_login.current_user.id, message='Album created!', photos=getUsersPhotos(uid))
     	#The method is GET so we return a  HTML form to upload the a photo.
     	else:
     		return render_template('albums_create.html')
@@ -211,18 +216,18 @@ def upload_file():
 		uid = getUserIdFromEmail(flask_login.current_user.id)
 		imgfile = request.files['photo']
 		caption = request.form.get('caption')
-		print caption
-		photo_data = base64.standard_b64encode(imgfile.read())
-		cursor = conn.cursor()
-		cursor.execute("INSERT INTO Pictures (imgdata, user_id, caption) VALUES ('{0}', '{1}', '{2}' )".format(photo_data,uid, caption))
-		conn.commit()
-		return render_template('hello.html', name=flask_login.current_user.id, message='Photo uploaded!', photos=getUsersPhotos(uid) )
-	#The method is GET so we return a  HTML form to upload the a photo.
+ 	      	print caption
+	       	album_name = request.form.get('album_name')
+		print album_name
+	       	aid = getAlbumid(album_name)
+		print aid
+	       	photo_data = base64.standard_b64encode(imgfile.read())
+ 	        cursor = conn.cursor()
+ 	        cursor.execute("INSERT INTO Pictures (imgdata, user_id, caption, album_id) VALUES ('{0}', '{1}', '{2}', '{3}')".format(photo_data,uid, caption, aid))
+ 	      	conn.commit()
+	        return render_template('hello.html', name=flask_login.current_user.id, message='Photo uploaded!', photos=getUsersPhotos(uid))
 	else:
 		return render_template('upload.html')
-#end photo uploading code
-
-
 #default page
 @app.route("/", methods=['GET'])
 def hello():
