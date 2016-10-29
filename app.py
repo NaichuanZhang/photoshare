@@ -86,6 +86,14 @@ A new page looks like this:
 def new_page_function():
 	return new_page_html
 '''
+def isFriendEmailUnique(femail):
+	fid = getUserIdFromEmail(femail)
+	cursor = conn.cursor()
+	if cursor.execute("SELECT * FROM Friends WHERE friend_id_2 = '{0}'".format(fid)):
+		#this means there are greater than zero entries with that email
+		return False
+	else:
+		return True
 
 @app.route('/add_friend', methods = ['GET', 'POST'])
 def addfriend():
@@ -93,14 +101,15 @@ def addfriend():
 		uid = getUserIdFromEmail(flask_login.current_user.id)
 		print uid
 		email = request.form.get('friend_email')
-		if isEmailExist(email):
+		print email
+		if isEmailExist(email) and isFriendEmailUnique(email):
 			friendid = getUserIdFromEmail(email)
 			cursor = conn.cursor()
 			cursor.execute("INSERT INTO Friends (friend_id_1, friend_id_2) VALUES ('{0}', '{1}')".format(uid, friendid))
 			conn.commit()
 			return render_template('hello.html', message="You added a new friend")
 		else:
-			return render_template('hello.html', message="Your friend is not found in the database")
+			return render_template('hello.html', message="Your friend is not found in the database or you have already added your friend")
 	else:
 		print "hello"
 		return render_template('add_friend.html')
@@ -261,7 +270,7 @@ def new_picture_info(picture_id):
 			cursor.execute("INSERT INTO Comments (description, photo_id) VALUES ('{0}', '{1}')".format(comment,picture_id))
 			cursor.execute("INSERT INTO Pictures_Tags (picture_id,tag_id) VALUES('{0}','{1}')".format(picture_id, tag_id[0]))
 			conn.commit()
-			return render_template('hello.html', name=flask_login.current_user.id, message='Comment created!', photos=getUsersPhotos(uid))
+			return render_template('hello.html', name=flask_login.current_user.id, message='Picture info added!', photos=getUsersPhotos(uid))
 	return render_template('new_picture_info.html',pid = picture_id, tags= getAlltags())
 
 
