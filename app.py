@@ -213,7 +213,7 @@ def register_user():
 
 def getUsersPhotos(uid):
 	cursor = conn.cursor()
-	cursor.execute("SELECT imgdata, picture_id, caption FROM Pictures WHERE user_id = '{0}'".format(uid))
+	cursor.execute("SELECT imgdata, picture_id, caption, num_likes FROM Pictures WHERE user_id = '{0}'".format(uid))
 	return cursor.fetchall() #NOTE list of tuples, [(imgdata, pid), ...]
 def getPicturesid(uid):
 	cursor = conn.cursor()
@@ -314,7 +314,7 @@ def upload_file():
 
 def getAllphotos():
 	cursor = conn.cursor()
-	cursor.execute("SELECT imgdata, picture_id, caption FROM Pictures")
+	cursor.execute("SELECT imgdata, picture_id, caption, num_likes FROM Pictures")
 	return cursor.fetchall() #NOTE list of tuples, [(imgdata, pid), ...]
 #function for Tags
 #TODO:add create_tag
@@ -343,6 +343,12 @@ def tag_new():
 			return render_template('hello.html', message='Tag already exist')
 	else:
 		return render_template('tag_new.html')
+
+def add_like(picture_id):
+	cursor = conn.cursor()
+	cursor.execute("UPDATE Pictures SET num_likes = num_likes + 1 WHERE picture_id ='{0}'".format(picture_id))
+	conn.commit()
+
 #default page
 @app.route("/", methods=['GET'])
 def hello():
