@@ -423,8 +423,12 @@ def recommendations(tag_id):
 	return resultarray
 
 @app.route("/view_by_tags/recommendation/<tagid>", methods = ['GET'])
+@flask_login.login_required
 def recommendation(tagid):
+	uid = uid = getUserIdFromEmail(flask_login.current_user.id)
 	tagarray = recommendations(tagid)
+	print("tagarray is", tagarray)
+	tagarray = getTopFiveTag(uid)
 	print("tagarray is", tagarray)
 	resultpicarray = []
 	cursor = conn.cursor()
@@ -447,6 +451,15 @@ def delete_photo(photo_id):
 	conn.commit()
 	uid = getUserIdFromEmail(flask_login.current_user.id)
 	return render_template('hello.html', name=flask_login.current_user.id, message='Your deleted your photo', photos=getUsersPhotos(uid), comments= getComments())
+#return the topfive popular tags for a particular user
+def getTopFiveTag(uid):
+	topfivearray =[]
+	cursor = conn.cursor()
+	cursor.execute("SELECT PT.tag_id from Pictures_Tags PT, Pictures P WHERE P.picture_id = PT.picture_id and P.user_id ='{0}' GROUP BY PT.tag_id ORDER BY count(PT.picture_id) DESC LIMIT 5".format(uid))
+	for x in cursor:
+		topfivearray.append(x[0])
+	return topfivearray
+
 #default page
 @app.route("/", methods=['GET'])
 def hello():
