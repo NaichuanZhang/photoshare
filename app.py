@@ -378,15 +378,53 @@ def getQueryArray(array):
 def view_by_tags():
 	if request.method == 'POST':
 		tag_id = request.form['tags']
+		print tag_id
 		picture_ids = getPictureidbyTagid(tag_id)
 		print picture_ids
 		querystring = getQueryArray(picture_ids)
 		print querystring
 		cursor = conn.cursor()
 		cursor.execute("SELECT imgdata, picture_id, caption, num_likes FROM Pictures WHERE picture_id in ({0})".format(querystring))
-		return render_template('hello.html', message='Pictures by Tag', photos =cursor.fetchall())
+		return render_template('hello.html', message='Pictures by Tag', photos =cursor.fetchall(), tag_id= tag_id)
 	else:
 		return render_template('searchbytag.html', tags = getAlltags())
+#recommendations
+def getAllPicureTagids(picture_id):
+	tagarray = []
+	cursor = conn.cursor()
+	cursor.execute("SELECT Tag_id FROM Pictures_Tags WHERE picture_id = '{0}'".format(picture_id))
+	for x in cursor:
+		tagarray.append(x[0])
+	return tagarray
+#return an array with all the recommendation tag_ids
+def recommendations(tag_id):
+	resultarray = []
+	picture_ids = getPictureidbyTagid(tag_id)
+	for x in picture_ids:
+		othertag = getAllPicureTagids(x)
+		for y in othertag:
+			if y not in resultarray:
+				resultarray.append(y)
+	print("resultarray is ", resultarray)
+	return resultarray
+
+@app.route("/view_by_tags/recommendation/<tagid>", methods = ['GET'])
+def recommendation(tagid):
+	tagarray = recommendations(tagid)
+	print("tagarray is", tagarray)
+	resultpicarray = []
+	cursor = conn.cursor()
+	for x in tagarray:
+		cursor.execute("SELECT picture_id FROM Pictures_Tags WHERE tag_id = '{0}'".format(x))
+		for y in cursor:
+			if y not in resultpicarray:
+				resultpicarray.append(y[0])
+	resultquery = getQueryArray(resultpicarray)
+	print("resultpicarray is ", resultpicarray)
+	newcursor = conn.cursor()
+	newcursor.execute("SELECT imgdata, picture_id, caption, num_likes FROM Pictures WHERE picture_id in ({0})".format(resultquery))
+	return render_template('hello.html', message = "Here are your recommendations", photos = newcursor.fetchall())
+
 
 #default page
 @app.route("/", methods=['GET'])

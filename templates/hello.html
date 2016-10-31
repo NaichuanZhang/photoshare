@@ -20,8 +20,10 @@
 {% else %}
 <p> Go to <a href='/profile'>profile?</a></p>
 {% endif %}
-
+{% if tag_id %}
+<a href='/view_by_tags/recommendation/{{tag_id}}'>Show recommendations</a><br>
 <ul>
+{% endif %}
     <li><a href='/show'>Photo Memory</a></li>
     <li><a href='/upload'>Upload a photo</a> </li>
     <li><a href='/albums_create'>Create an Album</a></li>
