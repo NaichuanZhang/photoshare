@@ -424,8 +424,15 @@ def recommendation(tagid):
 	newcursor = conn.cursor()
 	newcursor.execute("SELECT imgdata, picture_id, caption, num_likes FROM Pictures WHERE picture_id in ({0})".format(resultquery))
 	return render_template('hello.html', message = "Here are your recommendations", photos = newcursor.fetchall())
-
-
+#delete photo
+@app.route('/show/delete_photo/<photo_id>')
+@flask_login.login_required
+def delete_photo(photo_id):
+	cursor = conn.cursor()
+	cursor.execute("DELETE FROM Pictures WHERE Picture_id ='{0}'".format(photo_id))
+	conn.commit()
+	uid = getUserIdFromEmail(flask_login.current_user.id)
+	return render_template('hello.html', name=flask_login.current_user.id, message='Your deleted your photo', photos=getUsersPhotos(uid), comments= getComments())
 #default page
 @app.route("/", methods=['GET'])
 def hello():

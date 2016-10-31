@@ -69,8 +69,8 @@ CREATE TABLE Pictures_Tags
 (
 	picture_id int4,
     tag_id int4,
-    FOREIGN KEY (picture_id) references Pictures(picture_id) ON UPDATE CASCADE,
-    FOREIGN KEY (tag_id) references Tags(tag_id) ON UPDATE CASCADE
+    FOREIGN KEY (picture_id) references Pictures(picture_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (tag_id) references Tags(tag_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 
