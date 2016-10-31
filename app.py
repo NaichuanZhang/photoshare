@@ -348,6 +348,45 @@ def add_like(picture_id):
 	cursor = conn.cursor()
 	cursor.execute("UPDATE Pictures SET num_likes = num_likes + 1 WHERE picture_id ='{0}'".format(picture_id))
 	conn.commit()
+@app.route('/like/<picture_id>', methods=['POST','GET'])
+def like(picture_id):
+	add_like(picture_id)
+	return render_template('hello.html', message='You liked a photo', photots=getAllphotos())
+
+#View pictures by tag
+#returns tag_id in an array
+def getTagid(tag_description):
+	cursor = conn.cursor()
+	cursor.execute("SELECT tag_id FROM Tags WHERE description='{0}'".format(tag_description))
+	return cursor.fetchone()[0]
+#returns an array
+def getPictureidbyTagid(tag_id):
+	cursor = conn.cursor()
+	cursor.execute("SELECT picture_id FROM Pictures_Tags WHERE tag_id ='{0}'".format(tag_id))
+	array =[]
+	for x in cursor:
+		array.append(x[0])
+	return array
+
+def getQueryArray(array):
+	querystring = ''
+	for x in array:
+		querystring = querystring + str(x) + ','
+	return querystring[0:(len(querystring)-1)]
+
+@app.route('/view_by_tags', methods =['GET','POST'])
+def view_by_tags():
+	if request.method == 'POST':
+		tag_id = request.form['tags']
+		picture_ids = getPictureidbyTagid(tag_id)
+		print picture_ids
+		querystring = getQueryArray(picture_ids)
+		print querystring
+		cursor = conn.cursor()
+		cursor.execute("SELECT imgdata, picture_id, caption, num_likes FROM Pictures WHERE picture_id in ({0})".format(querystring))
+		return render_template('hello.html', message='Pictures by Tag', photos =cursor.fetchall())
+	else:
+		return render_template('searchbytag.html', tags = getAlltags())
 
 #default page
 @app.route("/", methods=['GET'])
