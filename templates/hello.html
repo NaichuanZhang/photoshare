@@ -11,7 +11,8 @@
     <li>Photo_id:{{photo[1]}}</li>
     <li>Photo_likes:{{photo[3]}}</li>
     <li><a href="/like/{{photo[1]}}">Like this photo</a></li>
-    <li><a href="/new_picture_info/{{photo[1]}}">Write Comment and Add Tags</a></li>
+    <li><a href="/new_picture_info/{{photo[1]}}">Write Comments</a></li>
+    <li><a href="/add_tag_to_pic/{{photo[1]}}">add a tag to picture</a></li>
     <li><a href="/comment_show/{{photo[1]}}">Show Comments</li>
     <li><a href="/show/delete_photo/{{photo[1]}}">delete the photo</a></li>
     {% endfor %}
@@ -22,7 +23,7 @@
 <p> Go to <a href='/profile'>profile?</a></p>
 {% endif %}
 {% if tag_id %}
-<a href='/view_by_tags/recommendation/{{tag_id}}'>Show recommendations</a><br>
+<a href='/view_by_tags/recommendation/{{tag_id}}'>You May Also like</a><br>
 <ul>
 {% endif %}
     <li><a href='/show'>Photo Memory</a></li>

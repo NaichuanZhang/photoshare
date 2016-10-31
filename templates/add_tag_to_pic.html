@@ -1,0 +1,19 @@
+<head>
+    <title>Add a tag to the picture</title>
+</head>
+
+<body>
+    <div class="title">
+        <h1>Upload a comment to Photoshare</h1>
+    </div>
+    <form method="post" enctype="multipart/form-data" action="/add_tag_to_pic/{{pid}}">
+        <p>Choose a tag to add</p>
+        <select name="tags" id="tags_option">
+          {% for tag in tags %}
+          <option value="{{tag[0]}}">{{tag[0]}},{{tag[1]}}</option>
+          {% endfor %}
+        </select>
+        <br><br>
+        <input type="submit" value='Add tag to picture'>
+    </form>
+</body>

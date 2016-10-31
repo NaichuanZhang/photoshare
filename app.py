@@ -263,17 +263,31 @@ def new_picture_info(picture_id):
     	if request.method == 'POST':
 			uid = getUserIdFromEmail(flask_login.current_user.id)
 			comment = request.form.get('description')
-			tag_id = request.form['tags']
-			print(tag_id)
 			print comment  #will show in the shell
 			cursor = conn.cursor()
-			cursor.execute("INSERT INTO Comments (description, photo_id) VALUES ('{0}', '{1}')".format(comment,picture_id))
-			cursor.execute("INSERT INTO Pictures_Tags (picture_id,tag_id) VALUES('{0}','{1}')".format(picture_id, tag_id[0]))
-			conn.commit()
-			return render_template('hello.html', name=flask_login.current_user.id, message='Picture info added!', photos=getUsersPhotos(uid))
+			if  not cursor.execute("SELECT * FROM Pictures WHERE Picture_id ='{0}' and user_id= '{1}'".format(picture_id,uid)):
+				cursor.execute("INSERT INTO Comments (description, photo_id, owner_id) VALUES ('{0}', '{1}','{2}')".format(comment,picture_id,uid))
+				return render_template('hello.html', name=flask_login.current_user.id, message='Picture info added!', photos=getUsersPhotos(uid))
+			else:
+				return render_template('hello.html', name = flask_login.current_user.id, message ='You can not comment your own photo')
 	return render_template('new_picture_info.html',pid = picture_id, tags= getAlltags())
-
-
+#add tag to picture
+@app.route('/add_tag_to_pic/<picture_id>', methods=['GET','POST'])
+@flask_login.login_required
+def add_tag_to_pic(picture_id):
+	print picture_id # log the picture_id
+    	if request.method == 'POST':
+			uid = getUserIdFromEmail(flask_login.current_user.id)
+			tag_id = request.form['tags']
+			print(tag_id)
+			cursor = conn.cursor()
+			if  cursor.execute("SELECT * FROM Pictures WHERE Picture_id ='{0}' and user_id= '{1}'".format(picture_id,uid)):
+				cursor.execute("INSERT INTO Pictures_Tags (picture_id,tag_id) VALUES('{0}','{1}')".format(picture_id, tag_id[0]))
+				conn.commit()
+				return render_template('hello.html', name=flask_login.current_user.id, message='Tag info added!', photos=getUsersPhotos(uid))
+			else:
+				return render_template('hello.html', name = flask_login.current_user.id, message ='You do not have the permission')
+	return render_template('add_tag_to_pic.html',pid = picture_id, tags= getAlltags())
 
 @app.route('/albums_create', methods=['GET','POST'])
 @flask_login.login_required
