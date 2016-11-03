@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Search</title>
+  </head>
+  <body>
+    <form method= "post" enctype="multipart/form-data" action = "/view_yours_by_tags">
+      <p>Choose a tag to add</p>
+      <select name="tags" id="tags_option">
+        {% for tag in tags %}
+        <option value="{{tag[0]}}">{{tag[0]}},{{tag[1]}}</option>
+        {% endfor %}
+      </select>
+      <br>
+      <input type="submit" value='Search Pictures'>
+  </body>
+</html>

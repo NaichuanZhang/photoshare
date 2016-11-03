@@ -387,7 +387,7 @@ def getQueryArray(array):
 	for x in array:
 		querystring = querystring + str(x) + ','
 	return querystring[0:(len(querystring)-1)]
-
+#view all photos by tags
 @app.route('/view_by_tags', methods =['GET','POST'])
 def view_by_tags():
 	if request.method == 'POST':
@@ -402,6 +402,26 @@ def view_by_tags():
 		return render_template('hello.html', message='Pictures by Tag', photos =cursor.fetchall(), tag_id= tag_id)
 	else:
 		return render_template('searchbytag.html', tags = getAlltags())
+
+@app.route('/view_yours_by_tags', methods =['GET','POST'])
+def view_yours_by_tags():
+	uid = getUserIdFromEmail(flask_login.current_user.id)
+	if request.method == 'POST':
+		tag_id = request.form['tags']
+		print tag_id
+		picture_ids = getPictureidbyTagid(tag_id)
+		print picture_ids
+		querystring = getQueryArray(picture_ids)
+		print querystring
+		cursor = conn.cursor()
+		cursor.execute("SELECT imgdata, picture_id, caption, num_likes FROM Pictures WHERE picture_id in ({0}) and user_id ='{1}'".format(querystring, uid))
+		return render_template('hello.html', message='Pictures by Tag', photos =cursor.fetchall(), tag_id= tag_id)
+	else:
+		return render_template('search_personal_bytag.html', tags = getAlltags())
+
+
+
+
 #recommendations
 def getAllPicureTagids(picture_id):
 	tagarray = []
