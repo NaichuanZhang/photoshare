@@ -78,6 +78,7 @@ CREATE TABLE Pictures_Tags
 INSERT INTO Users (email, password) VALUES ('test@bu.edu', 'test');
 INSERT INTO Users (email, password) VALUES ('test1@bu.edu', 'test');
 INSERT INTO albums(album_id,album_name,owner_id,date_of_create) Values (1,"album_one",2,'1001-01-01');
+/*changing the table */
 alter table Pictures add likes int4 NOT NULL default 0;
 alter table Albums drop date_of_create;
 alter table Albums add date_of_create datetime default CURRENT_TIMESTAMP;
@@ -85,3 +86,4 @@ alter table Pictures add date_of_create datetime default CURRENT_TIMESTAMP;
 alter table Comments drop date_of_create;
 alter table Comments add date_of_create datetime default CURRENT_TIMESTAMP;
 alter table Pictures add column num_likes integer not null default 0;
+alter table Users add gender varchar(45);

@@ -460,6 +460,55 @@ def getTopFiveTag(uid):
 		topfivearray.append(x[0])
 	return topfivearray
 
+def getUserContribution():
+	user_con = []
+	curosr = conn.cursor()
+	cursor.execute("SELECT C.owner_id, count(comment_id) as con from Comments as C group by owner_id")
+	for x in cursor:
+		user_con.append([x[0], x[1]])
+	print user_con
+	newcursor = conn.cursor()
+	newcursor.execute("SELECT P.user_id,count(picture_id) as con from Pictures as P group by user_id;")
+	for i in newcursor:
+		for j in user_con:
+			if i[0] == j[0]:
+				j[1] = j[1] + i[1]
+			else:
+				j[1] = j[1]
+	print user_con
+	return user_con
+
+def getKey(item):
+	return item[1]
+def getTopTenUser():
+	user_con = getUserContribution()
+	resultuid = []
+	resultarray = sorted(user_con, key=getKey)
+	print len(resultarray)
+	if len(resultarray) <= 10:
+		for x in resultarray:
+			resultuid.append(x[0])
+		return resultuid #return top 10 uid in an array
+	else:
+		toptenarray = resultarray[-9 :]
+		for y in toptenarray:
+			resultuid.append(y[0])
+		return resultuid  # return top 10 uid when there are more than 10 users
+
+@app.route("/top_ten", methods =['GET'])
+def top_ten():
+	top_ten_array = getTopTenUser()
+	print top_ten_array
+	result = []
+	for x in top_ten_array:
+		cursor = conn.cursor()
+		cursor.execute("SELECT fname, lname FROM Users WHERE user_id='{0}'".format(x))
+		result.append(cursor.fetchone())
+	print result
+	return render_template('top_ten.html', topten = result)
+
+
+
 #default page
 @app.route("/", methods=['GET'])
 def hello():
