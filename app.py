@@ -358,15 +358,24 @@ def tag_new():
 	else:
 		return render_template('tag_new.html')
 
-def add_like(picture_id):
+def add_like(picture_id,uid):
 	cursor = conn.cursor()
 	cursor.execute("UPDATE Pictures SET num_likes = num_likes + 1 WHERE picture_id ='{0}'".format(picture_id))
+	cursor.execute("INSERT INTO user_like (photo_id, user_id) VALUES('{0}','{1}')".format(picture_id, uid))
 	conn.commit()
+
 @app.route('/like/<picture_id>', methods=['POST','GET'])
+@flask_login.login_required
 def like(picture_id):
-	add_like(picture_id)
+	uid = getUserIdFromEmail(flask_login.current_user.id)
+	add_like(picture_id,uid)
 	return render_template('hello.html', message='You liked a photo', photots=getAllphotos())
 
+@app.route('/show_likes/<picture_id>')
+def show_likes(picture_id):
+	cursor = conn.cursor()
+	cursor.execute("SELECT DISTINCT user_id FROM user_like WHERE photo_id = '{0}'".format(picture_id))
+	return render_template('show_likes.html', likes = cursor.fetchall())
 #View pictures by tag
 #returns tag_id in an array
 def getTagid(tag_description):
