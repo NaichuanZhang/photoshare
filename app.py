@@ -304,7 +304,12 @@ def album_create():
     	else:
     		return render_template('albums_create.html')
 
-
+@app.route('/show_album/<album_name>')
+def show_album(album_name):
+	aid = getAlbumid(album_name)
+	cursor = conn.cursor()
+	cursor.execute("SELECT imgdata, picture_id, caption, num_likes FROM Pictures WHERE album_id = '{0}'".format(aid))
+	return render_template('hello.html', photos = cursor.fetchall())
 
 @app.route('/upload', methods=['GET', 'POST'])
 @flask_login.login_required
